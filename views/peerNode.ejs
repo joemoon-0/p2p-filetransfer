@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>P2P File Transfer</title>
+
+    <!-- renders code from the server onto the webpage -->
+    <script>
+      const NODE_ID = "<%= nodeId %>";
+    </script>
+
+    <!-- PeerJS library -->
+    <script
+      src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"
+      defer
+    ></script>
+
+    <!-- Allows front-end access to Socket.io -->
+    <script src="/socket.io/socket.io.js" defer></script>
+
+    <!-- Script for the node page -->
+    <script src="peerNode.js" defer></script>
+  </head>
+  <body>
+    <form><input type="file" /></form> 
+    <div>
+      <p>It's working</p>
+    </div>
+  </body>
+</html>

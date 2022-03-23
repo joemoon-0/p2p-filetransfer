@@ -1,0 +1,30 @@
+{
+  "name": "p2p-filetransfer",
+  "version": "1.0.0",
+  "description": "A Peer-to-Peer file transfer web application using WebRTC",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joemoon-0/p2p-filetransfer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joemoon-0/p2p-filetransfer/issues"
+  },
+  "homepage": "https://github.com/joemoon-0/p2p-filetransfer#readme",
+  "dependencies": {
+    "ejs": "^3.1.6",
+    "express": "^4.17.3",
+    "peer": "^0.6.1",
+    "socket.io": "^4.4.1",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
