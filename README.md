@@ -1,8 +1,10 @@
 # Peer-to-Peer Distributed File Downloader
 
 ### University of Missouri - Kansas City
-Distributed Computing Systems (CS5590-0012)
-Spring 2022
+<ul>
+    <li>Distributed Computing Systems (CS5590-0012)</li>
+    <li>Spring 2022</li>
+</ul>
 
 ### Contributors
 <ul>
