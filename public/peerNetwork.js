@@ -7,10 +7,10 @@ const peer = new Peer(undefined, {
     port: '3001'
 });
 
-// STEP 1: a peer is created. Calls the server's join-node function
+// STEP 1: a peer is created. Calls the server's join-network function
 peer.on('open', peerId => {
     // send event to server
-    socket.emit('join-node', NODE_ID, peerId);
+    socket.emit('join-network', networkId, peerId);
 });
 
 socket.on('peer-connected', (peerId) => {

@@ -6,7 +6,7 @@
 
     <!-- renders code from the server onto the webpage -->
     <script>
-      const NODE_ID = "<%= nodeId %>";
+      const NODE_ID = "<%= networkId %>";
     </script>
 
     <!-- PeerJS library -->
@@ -18,8 +18,8 @@
     <!-- Allows front-end access to Socket.io -->
     <script src="/socket.io/socket.io.js" defer></script>
 
-    <!-- Script for the node page -->
-    <script src="peerNode.js" defer></script>
+    <!-- Script for the network page -->
+    <script src="peerNetwork.js" defer></script>
   </head>
   <body>
     <form><input type="file" /></form> 

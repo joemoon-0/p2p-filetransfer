@@ -14,23 +14,23 @@ app.get('/', (req, res) => {
    res.redirect(`/${uuidV4()}`); 
 });
 
-app.get('/:peerNode', (req, res) => {
-   res.render('peerNode', { nodeId: req.params.node });
+app.get('/:peerNetwork', (req, res) => {
+   res.render('peerNetwork', { networkId: req.params.network });
 });
 
-// execution when user connects to a node's id-page
+// execution when user connects to a network's id-page
 io.on('connection', (socket) => {
-    // Execution on a peer joining a node
-    socket.on('join-node', (nodeId, peerId) => {
-        // STEP 1: join the node
-        socket.join(nodeId);
+    // Execution on a peer joining a network
+    socket.on('join-network', (networkId, peerId) => {
+        // STEP 1: join the network
+        socket.join(networkId);
                 
-        // STEP 2: announce existence to all peers on the network with same nodeId
-        socket.to(nodeId).emit('peer-connected', peerId);
+        // STEP 2: announce existence to all peers on the network with same networkId
+        socket.to(networkId).emit('peer-connected', peerId);
 
-        // STEP 3: disconnect a peer from the network when they leave
+        // STEP 3: disconnect from the network when the peer leaves
         socket.on('disconnect', () => {
-            socket.to(nodeId).emit('peer-disconnected', peerId);
+            socket.to(networkId).emit('peer-disconnected', peerId);
         });
     });
 });
