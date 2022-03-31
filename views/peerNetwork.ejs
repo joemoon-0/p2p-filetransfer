@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <title>P2P File Transfer</title>
-
+    
     <!-- renders code from the server onto the webpage -->
     <script>
-      const NODE_ID = "<%= networkId %>";
+      const NETWORK_ID = "<%= networkId %>";
     </script>
 
     <!-- PeerJS library -->
@@ -15,7 +15,7 @@
       defer
     ></script>
 
-    <!-- Allows front-end access to Socket.io -->
+    <!-- Socket.IO library -->
     <script src="/socket.io/socket.io.js" defer></script>
 
     <!-- Script for the network page -->
@@ -23,8 +23,5 @@
   </head>
   <body>
     <form><input type="file" /></form> 
-    <div>
-      <p>It's working</p>
-    </div>
   </body>
 </html>

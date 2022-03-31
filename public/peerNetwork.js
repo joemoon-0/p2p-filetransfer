@@ -1,30 +1,26 @@
 const socket = io('/');
-const peers = [];
+let networkPeers = [];
 
-/* PeerJS: API that allows the server to generate a peerId */
+// PeerJS: API that allows the server to generate a peerId 
 const peer = new Peer(undefined, {
     host: '/', 
     port: '3001'
 });
 
-// STEP 1: a peer is created. Calls the server's join-network function
+// Open a connection to the network for a newly created peer
 peer.on('open', peerId => {
-    // send event to server
-    socket.emit('join-network', networkId, peerId);
+    socket.emit('join-network', NETWORK_ID, peerId);
 });
 
-socket.on('peer-connected', (peerId) => {
+socket.on('peer-connected', (peerList) => {
     console.log("Peer Connected.");
-    registerPeer(peerId);
+
+    networkPeers = peerList.splice(0);
+    console.log(networkPeers);
 });
 
 socket.on('peer-disconnected', (peerId) => {
     console.log("Peer Disconnected.");
-    peers.splice(peers.indexOf(peerId), 1);
-    console.log("peers on network: ", peers);
+    networkPeers.splice(networkPeers.indexOf(peerId), 1);
+    console.log("peers on network: ", networkPeers);
 });
-
-const registerPeer = (peerId) => {
-    peers.push(peerId);
-    console.log("peers on network: ", peersList);
-};
