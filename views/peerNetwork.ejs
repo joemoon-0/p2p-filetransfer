@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <title>P2P File Transfer</title>
     
+    <!-- Bootstrap: CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="/styles/peerNetwork.css">
+    
     <!-- renders code from the server onto the webpage -->
     <script>
       const NETWORK_ID = "<%= networkId %>";
@@ -18,10 +23,63 @@
     <!-- Socket.IO library -->
     <script src="/socket.io/socket.io.js" defer></script>
 
-    <!-- Script for the network page -->
-    <script src="peerNetwork.js" defer></script>
   </head>
   <body>
-    <form><input type="file" /></form> 
+      <div class="container">
+          <div class="row">
+              <!-- FILE UPLOAD SECTION -->
+              <div class="col section text-center">
+                  <h4>Upload a file to the network</h4>
+                  <div class="container">
+                      <div class="row">
+                          <div class="col section-upload section-minor">
+                              <form enctype="multipart/form-data" method="post" action="#">
+                                    <input type="file" id="file" /></form> 
+                            <button class="btn btn-primary" id="upload">Upload</button>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col">
+                              <p id="upload-staus"></p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- NETWORK INFORMATION SECTION -->
+              <div class="col section text-center">
+                  <h1>P2P Network Information</h1>
+                  <h6>Your ID is highlighted in <span class="self">GREEN</span></h4>
+                  <div class="container section-minor" id="peerInfo">
+                      <div class="row">
+                          <div class="col-2 text-center">Peer #</div>
+                          <div class="col text-center">Peer ID</div>
+                      </div>
+                      <div id="peerList" class="row"></div>
+                  </div>
+              </div>
+          </div>
+          <div class="row">
+            <!-- FILE LIBRARY SECTION -->
+            <div class="col section text-center">
+                <h1>Network File Information</h1>
+                <h4>Files available on the network.<br /> Green files are hosted locally.</h4>
+                <div class="container section-minor" id="fileInfo" >
+                    <div class="row">
+                        <div class="col-3 text-center">
+                        </div>
+                        <div class="col text-center"><h4>File</h4></div>
+                    </div>
+                    <div id="fileList" class="row"></div>
+                </div>
+            </div>
+          </div>
+      </div>
+
+    <!-- Bootstrap: JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+    <!-- Script for the network page -->
+    <script src="peerNetwork.js" defer></script>
   </body>
 </html>
