@@ -35,7 +35,7 @@ io.on("connection", (socket) => {
         socket.on("registerFile", (peerId, file) => {
             const fileData = {
                 key: peerId,
-                value: file,
+                value: file, // meta data
             };
             fileIndex.push(fileData);
             socket.in(networkId).emit("receiveFileData", fileIndex);
@@ -66,13 +66,8 @@ const registerPeer = (socket, networkId, peerId) => {
     // Update peerList with new peerId
     if (!peerList.includes(peerId)) {
         peerList.push(peerId);
-        console.log("peerList => ", peerList);
+        console.log("Peers registered on network => ", peerList);
     }
-
-    // Request fileIndex upon joining network
-    // if (peerList.length > 1) {
-    //     socket.to(networkId).emit("requestFileList");
-    // }
 
     // Announce existence to all peers on the network with same networkId
     socket.in(networkId).emit("peer-connected", peerList);

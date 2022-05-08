@@ -2,9 +2,18 @@ const socket = io("/");
 let networkPeers = [];
 let selfID = ""; // ID specific to this peer
 let conn = ""; // connection object between peers
-let networkFileIndex = []; // contains network-wide file metadata
+let networkFileIndex = []; // contains network-wide file metadata: [key: peerId, value: metadata]
 let localFileIndex = []; // contains local file metadata: [selfID, filemeta]
 let localLibrary = []; // contains local file data: [filemeta, blob]
+
+// Object for transferring messages between peers
+class Message {
+    constructor(selfID, messageType, message) {
+        this.selfID = selfID;
+        this.messageType = messageType;
+        this.message = message;
+    }
+}
 
 // PeerJS: API that allows the server to generate a peerId
 const peer = new Peer(undefined, {
@@ -20,9 +29,7 @@ peer.on("open", (peerId) => {
 
 socket.on("peer-connected", (peerList) => {
     console.log("Peer Connected.");
-
     networkPeers = peerList.splice(0);
-    console.log(networkPeers);
     printPeerDisplay(networkPeers);
 });
 
@@ -42,6 +49,7 @@ socket.on("receiveFileData", (fileIndex) => {
     printFileDisplay(networkFileIndex, localFileIndex);
 });
 
+// --- Upload a file and make it available to peer network ---
 const uploadFile = () => {
     if (!document.getElementById("file").files.length) {
         alert("Please select a file to upload.");
@@ -53,7 +61,7 @@ const uploadFile = () => {
     // Save file meta data for file identification among peers
     const filemeta = {
         lastModified: file.lastModified,
-        // lastModifiedDate: file.lastModifiedDate,
+        // lastModifiedDate: file.lastModifiedDate,     // depricated
         name: file.name,
         size: file.size,
         type: file.type,
@@ -72,7 +80,6 @@ const uploadFile = () => {
     reader.onloadend = (e) => {
         if (e.target.readyState == FileReader.DONE) {
             localLibrary.push([filemeta, blob]);
-            console.log("Local Library => ", localLibrary);
         }
     };
 
@@ -90,21 +97,22 @@ const removeAllFiles = (peerId) => {
 };
 
 // Removes a file from networkFileIndex associated with its file index
-const removeFile = (index) => {
-    fileToRemove = networkFileIndex[index];
+const removeFile = (fileIndex) => {
+    fileToRemove = networkFileIndex[fileIndex];
 
     // Remove file from localFileIndex
     localFileIndex.splice(localFileIndex.indexOf(fileToRemove.key));
-    networkFileIndex.splice(index, 1);
+    networkFileIndex.splice(fileIndex, 1);
 
     // Remove file from localLibrary
-    localLibrary.forEach((element, localIndex, array) => {
+    localLibrary.forEach((element, index, array) => {
         if (compareMeta(element[0], fileToRemove.value)) {
-            array.splice(localIndex, 1);
+            array.splice(index, 1);
         }
     });
 };
 
+// --- Peer Display Output ---
 const printPeerDisplay = (networkPeers) => {
     refreshPeerDisplay();
 
@@ -126,7 +134,9 @@ const refreshPeerDisplay = () => {
     const peerDisplay = document.getElementById("peerList");
     peerDisplay.innerHTML = ``;
 };
+// --- End of Peer Display Output ---
 
+// --- File Display Output ---
 const printFileDisplay = (networkFileIndex, localFileIndex) => {
     refreshFileDisplay();
     const fileDisplay = document.getElementById("fileList");
@@ -159,53 +169,62 @@ const printFileDisplay = (networkFileIndex, localFileIndex) => {
         counterID++;
     });
 };
+// --- End of File Display Output ---
 
 const refreshFileDisplay = () => {
     const fileDisplay = document.getElementById("fileList");
     fileDisplay.innerHTML = "";
 };
 
-// const arrayBufferToBase64 = (buffer) => {
-//     let binary = "";
-//     let bytes = new Uint8Array(buffer);
-//     let len = bytes.byteLength;
-//     for (let i = 0; i < len; i++) {
-//         binary += String.fromCharCode(bytes[i]);
-//     }
-//     return btoa(binary);
-// };
+// Establish a connect with the peer that has the file and send request
+const download = (fileIndex) => {
+    // TODO: handle files held by multiple peers
+    // OR redirect in case of peer failure
+    let conn = peer.connect(networkFileIndex[fileIndex].key);
+    conn.on("open", () => {
+        // send meta data for requested file
+        conn.send(
+            new Message(
+                selfID,
+                "fileRequest",
+                networkFileIndex[fileIndex].value
+            )
+        );
+    });
+};
 
-// const base64ToBlob = (b64Data, contentType) => {
-//     contentType = contentType || "";
-//     let byteArrays = [];
-//     let byteNumbers;
-//     let slice;
+// Receive data from a peer
+peer.on("connection", (conn) => {
+    // On receiving a Message, process data depending on Message type
+    conn.on("data", (data) => {
+        if (data.messageType === "fileRequest") {
+            // Find requested file in localLibrary
+            let fileData = localLibrary.find((element) =>
+                compareMeta(element[0], data.message)
+            );
 
-//     for (let i = 0; i < b64Data.length; i++) {
-//         slice = b64Data[i];
-//         byteNumbers = new Array(slice.length);
-//         for (let j = 0; j < slice.length; j++) {
-//             byteNumbers[j] = slice.charCodeAt(j);
-//         }
+            // Send file data to requesting peer
+            const response = peer.connect(data.selfID);
+            response.on("open", () => {
+                response.send(new Message(selfID, "fileBlob", fileData));
+            });
+        } else if (data.messageType == "fileBlob") {
+            // Receive and download request
+            saveFile(data.message[0], data.message[1]);
 
-//         let byteArray = new Uint8Array(byteNumbers);
-//         byteArrays.push(byteArray);
-//     }
+            const meta = data.message[0];
+            document.getElementById("file-status").innerHTML = `Downloading File: <span class="listTitle">${meta.name}</span>`;
+            document.getElementById("source-peer").innerHTML = `Downloading from Peer: <span class="listTitle">${data.selfID}</span>`;
+        }
+    });
+});
 
-//     let blob = new Blob(byteArrays, { type: contentType });
-//     return blob;
-// };
-
+// Save file to disk
 const saveFile = (meta, blob) => {
-    let reader = new FileReader();
-    let result = new File([blob], meta.name);
-    reader.readAsDataURL(result);
-    reader.onload = () => {
-        let link = document.createElement("a");
-        link.href = window.URL.createObjectURL(blob);
-        link.download = meta.name;
-        link.click();
-    };
+    let link = document.createElement("a");
+    link.href = window.URL.createObjectURL(new Blob([blob]));
+    link.download = meta.name;
+    link.click();
 };
 
 // Compares two sets of file meta data
@@ -223,10 +242,9 @@ document.addEventListener("click", (e) => {
     if (e.target.id == "upload") {
         uploadFile();
     } else if (e.target.innerText == "Remove") {
-        console.log("REMOVE");
         removeFile(e.target.id);
         socket.emit("updateFileIndex", networkFileIndex);
     } else if (e.target.innerText == "Download") {
-        console.log("DOWNLOAD");
+        download(e.target.id);
     }
 });
