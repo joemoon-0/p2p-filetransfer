@@ -11,7 +11,7 @@
     
     <!-- renders code from the server onto the webpage -->
     <script>
-      const NETWORK_ID = "<%= networkId %>";
+        const NETWORK_ID = "<%= networkId %>";
     </script>
 
     <!-- PeerJS library -->
@@ -27,10 +27,10 @@
   <body>
       <div class="container">
           <div class="row">
-              <!-- FILE UPLOAD SECTION -->
               <div class="col section text-center">
-                  <h4>Upload a file to the network</h4>
                   <div class="container">
+                    <h4>Upload a file to the network</h4>
+                      <!-- FILE UPLOAD SECTION -->
                       <div class="row">
                           <div class="col section-upload section-minor">
                               <form enctype="multipart/form-data" method="post" action="#">
@@ -38,9 +38,12 @@
                             <button class="btn btn-primary" id="upload">Upload</button>
                           </div>
                       </div>
+                      <!-- STATUS SECTION -->
+                      <h4>STATUS</h4>
                       <div class="row">
-                          <div class="col">
-                              <p id="upload-staus"></p>
+                          <div class="col section-minor">
+                              <p id="file-status"></p>
+                              <p id="source-peer"></p>
                           </div>
                       </div>
                   </div>
@@ -49,6 +52,9 @@
               <!-- NETWORK INFORMATION SECTION -->
               <div class="col section text-center">
                   <h1>P2P Network Information</h1>
+                  <div class="row">
+                      <div id="netIdDisplay" class="col section-minor"></div>
+                  </div>
                   <h6>Your ID is highlighted in <span class="self">GREEN</span></h4>
                   <div class="container section-minor" id="peerInfo">
                       <div class="row">
@@ -63,7 +69,7 @@
             <!-- FILE LIBRARY SECTION -->
             <div class="col section text-center">
                 <h1>Network File Information</h1>
-                <h4>Files available on the network.<br /> Green files are hosted locally.</h4>
+                <h4>Files available on the network.<br /> <span class="self">Green</span> files are hosted locally.</h4>
                 <div class="container section-minor" id="fileInfo" >
                     <div class="row">
                         <div class="col-3 text-center">
@@ -81,5 +87,8 @@
 
     <!-- Script for the network page -->
     <script src="peerNetwork.js" defer></script>
+    <script>
+        document.getElementById("netIdDisplay").innerHTML = `Your network ID: <span class="listTitle">${NETWORK_ID}</span>`;
+    </script>
   </body>
 </html>
