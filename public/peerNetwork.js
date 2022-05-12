@@ -178,8 +178,6 @@ const refreshFileDisplay = () => {
 
 // Establish a connect with the peer that has the file and send request
 const download = (fileIndex) => {
-    // TODO: handle files held by multiple peers
-    // OR redirect in case of peer failure
     let conn = peer.connect(networkFileIndex[fileIndex].key);
     conn.on("open", () => {
         // send meta data for requested file
